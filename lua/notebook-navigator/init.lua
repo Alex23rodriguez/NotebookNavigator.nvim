@@ -278,7 +278,7 @@ local function activate_hydra(config)
     config = {
       invoke_on_body = true,
       color = "pink",
-      hint = { border = "rounded" },
+      hint = { type = "window" },
     },
     body = config.activate_hydra_keys,
     heads = active_hydra_heads,
