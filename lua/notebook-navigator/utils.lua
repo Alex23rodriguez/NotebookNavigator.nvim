@@ -3,9 +3,9 @@ local utils = {}
 utils.get_cell_marker = function(bufnr, cell_markers)
   local ft = vim.bo[bufnr].filetype
 
-  if ft == nil or ft == "" then
-    print "[NotebookNavigator] utils.lua: Empty filetype"
-  end
+  -- if ft == nil or ft == "" then
+    -- print "[NotebookNavigator] utils.lua: Empty filetype"
+  -- end
 
   local user_opt_cell_marker = cell_markers[ft]
   if user_opt_cell_marker then
