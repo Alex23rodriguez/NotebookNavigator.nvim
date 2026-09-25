@@ -161,8 +161,13 @@ Default values:
     -- of the next cell or at the end of the file.
     -- By default, uses language-specific double percent comments like `# %%`.
     -- This can be overridden for each language with this setting.
+    -- Values may be either a single string or a list of strings. When a list is
+    -- given, the buffer is scanned top-to-bottom and the marker that appears
+    -- first (leftmost wins on ties) becomes the active marker for that buffer.
+    -- If no candidate occurs in the buffer, the first list entry is used.
     cell_markers = {
       -- python = "# %%",
+      -- python = { "# %%", "# In[" },
     },
 
     -- If not `nil` the keymap defined in the string will activate the hydra head

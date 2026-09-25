@@ -299,8 +299,14 @@ M.config = {
   -- of the next cell or at the end of the file.
   -- By default, uses language-specific double percent comments like `# %%`.
   -- This can be overridden for each language with this setting.
+  -- Values may be either a single string or a list of strings. When a list is
+  -- given, the buffer is scanned top-to-bottom and the marker that appears
+  -- first (leftmost wins on ties) becomes the active marker for that buffer.
+  -- The result is cached per buffer and refreshed on file open/reload and on
+  -- save. If no candidate occurs in the buffer, the first list entry is used.
   cell_markers = {
     -- python = "# %%",
+    -- python = { "# %%", "# In[" },
   },
 
   -- If not `nil` the keymap defined in the string will activate the hydra head
@@ -370,9 +376,27 @@ M.setup = function(config)
 
   for ft, marker in pairs(M.config.cell_markers) do
     vim.validate({
-      ["config.cell_markers." .. ft] = { marker, "string" },
+      ["config.cell_markers." .. ft] = { marker, { "string", "table" } },
     })
+    if type(marker) == "table" then
+      for i, m in ipairs(marker) do
+        vim.validate({
+          ["config.cell_markers." .. ft .. "[" .. i .. "]"] = { m, "string" },
+        })
+      end
+    end
   end
+
+  vim.api.nvim_create_augroup("NotebookNavigatorCache", { clear = true })
+  vim.api.nvim_create_autocmd(
+    { "BufReadPost", "BufNewFile", "BufWritePost", "BufWipeout" },
+    {
+      group = "NotebookNavigatorCache",
+      callback = function(args)
+        utils.invalidate_resolved_cache(args.buf)
+      end,
+    }
+  )
 
   if (not got_hydra) and (M.config.activate_hydra_keys ~= nil) then
     vim.notify "[NotebookNavigator] Hydra is not available.\nHydra will not be available."
